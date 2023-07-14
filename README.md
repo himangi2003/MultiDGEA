@@ -1,4 +1,4 @@
-# Multidgea
+# MultiDGEA
 
 This package is specifically designed to carry out differential gene expression analysis using five different analysis methods that includes Limma Voom, Limma voom with duplicate correlation, DEseq, Kimma and DREM.
 
