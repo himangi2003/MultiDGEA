@@ -5,7 +5,7 @@ This package is specifically designed to carry out differential gene expression 
 
 Author: Himangi Srivastava
 
-The DEG code requires some of the packages dependency  that are used.
+The MultiDGEA package requires some of the packages dependency  that are used. THe package specifically requires R version 4.2.
 
 | Package | 
 | -----------| 
@@ -27,7 +27,7 @@ The DEG code requires some of the packages dependency  that are used.
     
 
 # Introduction
-The package DEG is designed to carry out differetial gene expression analysis for the RNA seq data generated at different time points. The package includes the capacity to run and analyze RNASeq data using diffeent methods at the same time, perform comparitive analysis of the results obtained from all different kinds of comaprisios and also to store and summarize the results of a comparative analysis methods used.
+The package MultiDGEA is designed to carry out differetial gene expression analysis for the RNA seq data generated at different time points. The package includes the capacity to run and analyze RNASeq data to obtain Differentially expressed genes using different methods at the same time. It can also perform comparitive analysis of the results obtained from all different kinds of analysis with the capacity to store and summarize the results of each comparative analysis methods used.
 
 The package is designed to carry out analysis by just extracting argument form an arguments file by using extract_input_data function which will automatically convert the data into the form required by the later function to run the analysis  or it can carry out analysis by dynamically assigning variables and inputs to the functions.
 There are set of inputs used to run the analysis, some of it are specific to the particular analysis while others are common to all the anlysis types. The ones that are common are 
@@ -67,18 +67,18 @@ This table explains the inputs used for the anlalyis and the structure and forma
 
 
 
-## DEG R Package without using arguments file
+## MultiDGEA R Package without using arguments file
 
 The outline of this tutorial is as follows:
 ### Running the analysis 
-1.  Install the package DEG from a zipped folder `` install.packages(file.choose(), repos = NULL, type="source") ``
-2.  Use the library `` library(DEG) ``
+1.  Install the package MultiDGEA from a zipped folder `` install.packages(file.choose(), repos = NULL, type="source") ``
+2.  Use the library `` library(MultiDGEA) ``
 3.  Load the  counts data 
    `` counts_data <- read.csv("counts.csv", row.names = 1)  ``
 4. Load the sample meta data 
    `` sample_meta_data <- read.csv("sample_meta_data.csv", row.names = 1)  ``
 
-6.  Find DEG analysis results using Kimma method
+6.  Find MultiDGEA analysis results using Kimma method
 
                 Kimma_result <- fitting_data_kimma (count_matrix = counts_data,
                                                     meta_data = sample_meta_data,
@@ -86,7 +86,7 @@ The outline of this tutorial is as follows:
                                                     kimma_model=  "~ day + (1|pubid)",
                                                     contrast_var="day",
                                                     patient_id_var="pubid")
-7.  Find DEG analysis results using DREM method
+7.  Find MultiDGEA analysis results using DREM method
 
                Drem_results <- fitting_data_DREAM (count_matrix = counts_data,
                                                     meta_data = sample_meta_data,
@@ -95,7 +95,7 @@ The outline of this tutorial is as follows:
                                                     contrast_var="day",
                                                     patient_id_var="pubid")
     
-9.  Find DEG analysis results using Limma Voom method
+9.  Find MultiDGEA analysis results using Limma Voom method
    
                 Limma_voom_results <- fitting_data_limma_voom (count_matrix = counts_data,
                                                     meta_data = sample_meta_data,
@@ -103,7 +103,7 @@ The outline of this tutorial is as follows:
                                                     contrast_var="day",
                                                     patient_id_var="pubid")
 
-10. Find DEG analysis results using Limma Voom Duplicate Correlation method
+10. Find MultiDGEA analysis results using Limma Voom Duplicate Correlation method
    
                 Limma_voom_duplicate_corr_results <- limma_voom_duplicate_correlation(count_matrix = counts_data,
                                                                                          meta_data = sample_meta_data,
@@ -111,7 +111,7 @@ The outline of this tutorial is as follows:
                                                                                          contrast_var="day",
                                                                                          patient_id_var="pubid")
 
-11. Find DEG analysis results using Deseq method
+11. Find MultiDGEA analysis results using Deseq method
    
                 Deseq_result <- fitting_data_Deseq(count_matrix = counts_data,
                                         meta_data = sample_meta_data,
@@ -146,7 +146,7 @@ For deseq
                     
 14.  Plot the heatmap plot for differenr analysis
 
-                     heatmap_top_100_deg_edgeR(result=Limma_voom_results,
+                     heatmap_top_100_MultiDGEA_edgeR(result=Limma_voom_results,
                                                  count_matrix = counts_data,
                                                meta_data = sample_meta_data,
                                                 model_design_parameter ="~day")
@@ -220,25 +220,25 @@ for comparing limma_voom_duplicate_correlation and Deseq upregulated genes
 
 Finding significant genes for Limma_voom_duplicate_correlation
                         
-                    Limma_voom_duplicate_corr_results_DEG <- find_DEG_genes(result = Limma_voom_duplicate_corr_results,
+                    Limma_voom_duplicate_corr_results_MultiDGEA <- find_MultiDGEA_genes(result = Limma_voom_duplicate_corr_results,
                                                                              p_val=0.05,
                                                                               FDR_=0.2,
                                                                               LFC_=0.05)
 Finding significant genes for Deseq
                         
-                    Limma_voom_duplicate_corr_results_DEG <- find_DEG_genes(result = Limma_voom_duplicate_corr_results,
+                    Limma_voom_duplicate_corr_results_MultiDGEA <- find_MultiDGEA_genes(result = Limma_voom_duplicate_corr_results,
                                                          p_val=0.05,
                                                           FDR_=0.2,
                                                           LFC_=0.05)
 
 
-                        Deseq_results_DEG <- find_DEG_genes(result = Deseq_results,
+                        Deseq_results_MultiDGEA <- find_MultiDGEA_genes(result = Deseq_results,
                                                             p_val=0.05,
                                                             FDR_=0.2,
                                                             LFC_=0.05)
                         
-                        sig1=Deseq_results_DEG$up_regulated
-                        sig2=Limma_voom_duplicate_corr_results_DEG$up_regulated
+                        sig1=Deseq_results_MultiDGEA$up_regulated
+                        sig2=Limma_voom_duplicate_corr_results_MultiDGEA$up_regulated
                         plot_venn(sig1,sig2,"Limma_voom_vs_Deseq")
 
                                                           
