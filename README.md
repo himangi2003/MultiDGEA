@@ -5,7 +5,7 @@ This package is specifically designed to carry out differential gene expression 
 
 Author: Himangi Srivastava
 
-The MultiDGEA package requires some of the packages dependency  that are used. THe package specifically requires R version 4.2.
+The MultiDGEA package requires some of the packages dependency  that are used. The package specifically requires R version 4.2.
 
 | Package | 
 | -----------| 
