@@ -7,6 +7,9 @@ Author: Himangi Srivastava
 
 The MultiDGEA package requires some of the packages dependency  that are used. The package specifically requires R version 4.2.
 
+To test the package the zipped version of the package is available at X:\fast\gilbert_p\hsrivast\first_git_project\Multidgea as Multidgea_0.1.0.tar.gz
+and sample input data for count matrix is available as count_matrix.csv and sample meta data is available as sample_meta_data.csv . 
+
 | Package | 
 | -----------| 
 | DESeq2   | 
@@ -27,7 +30,7 @@ The MultiDGEA package requires some of the packages dependency  that are used. T
     
 
 # Introduction
-The package MultiDGEA is designed to carry out differetial gene expression analysis for the RNA seq data generated at different time points. The package includes the capacity to run and analyze RNASeq data to obtain Differentially expressed genes using different methods at the same time. It can also perform comparitive analysis of the results obtained from all different kinds of analysis with the capacity to store and summarize the results of each comparative analysis methods used.
+The package MultiDGEA is designed to carry out differential gene expression analysis for the RNA seq data generated at different time points. The package includes the capacity to run and analyze RNASeq data to obtain Differentially expressed genes using different methods at the same time. It can also perform comparitive analysis of the results obtained from all different kinds of analysis with the capacity to store and summarize the results of each comparative analysis methods used.
 
 The package is designed to carry out analysis by just extracting argument form an arguments file by using extract_input_data function which will automatically convert the data into the form required by the later function to run the analysis  or it can carry out analysis by dynamically assigning variables and inputs to the functions.
 There are set of inputs used to run the analysis, some of it are specific to the particular analysis while others are common to all the anlysis types. The ones that are common are 
