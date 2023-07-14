@@ -7,8 +7,7 @@ Author: Himangi Srivastava
 
 The MultiDGEA package requires some of the packages dependency  that are used. The package specifically requires R version 4.2.
 
-To test the package the zipped version of the package is available at X:\fast\gilbert_p\hsrivast\first_git_project\Multidgea as Multidgea_0.1.0.tar.gz
-and sample input data for count matrix is available as count_matrix.csv and sample meta data is available as sample_meta_data.csv . 
+To test the package the zipped version of the package is available at X:\fast\gilbert_p\hsrivast\first_git_project\Multidgea as Multidgea_0.1.0.tar.gz  and sample input data for count matrix is available as count_matrix.csv and sample meta data is available as sample_meta_data.csv . 
 
 | Package | 
 | -----------| 
