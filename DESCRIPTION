@@ -15,7 +15,6 @@ Imports:
     doParallel,
     dplyr,
     edgeR,
-    EnhancedVolcano,
     ggplot2,
     kimma,
     limma,
@@ -24,5 +23,8 @@ Imports:
     rlang,
     stringr,
     tibble,
-    variancePartition,
     VennDiagram
+Recommends:
+    EnhancedVolcano,
+    variancePartition
+
