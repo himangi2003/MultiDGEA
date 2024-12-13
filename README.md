@@ -1,248 +1,233 @@
 # MultiDGEA
 
-This package is specifically designed to carry out differential gene expression analysis using five different analysis methods that includes Limma Voom, Limma voom with duplicate correlation, DEseq, Kimma and DREM.
+This package is specifically designed to carry out differential gene expression analysis using five different analysis methods, including Limma Voom, Limma Voom with duplicate correlation, DESeq, Kimma, and DREM.
 
+### Author: Himangi Srivastava
 
-Author: Himangi Srivastava
+## Requirements
+The MultiDGEA package requires R version 4.2 and several dependencies. The package is provided as `Multidgea_0.1.0.tar.gz`, along with sample input data:
+- **Count matrix**: `count_matrix.csv`
+- **Sample meta data**: `sample_meta_data.csv`
 
-The MultiDGEA package requires some of the packages dependency  that are used. The package specifically requires R version 4.2.
+### Package Dependencies
+| Package              |
+|----------------------|
+| DESeq2              |
+| dplyr               |
+| doParallel          |
+| edgeR               |
+| ggplot2             |
+| kimma               |
+| limma               |
+| magrittr            |
+| readr               |
+| rlang               |
+| stringr             |
+| tibble              |
+| variancePartition   |
+| VennDiagram         |
 
-To test the package the zipped version of the package as Multidgea_0.1.0.tar.gz  and sample input data for count matrix is available as count_matrix.csv and sample meta data is available as sample_meta_data.csv . 
+---
 
-| Package | 
-| -----------| 
-| DESeq2   | 
-|  dplyr | 
-|doParallel|
-| edgeR |
-|ggplot2|
-|kimma|
-|limma|
-|magrittr|
-| readr|
-| rlang|
-|stringr|
-|tibble|
-|variancePartition|
-| VennDiagram |
-    
-    
+## Introduction
+MultiDGEA is designed for differential gene expression analysis of RNA-seq data across multiple time points. It can:
+- Analyze RNA-seq data using multiple methods simultaneously.
+- Perform comparative analyses of the results from different methods.
+- Store and summarize the results.
 
-# Introduction
-The package MultiDGEA is designed to carry out differential gene expression analysis for the RNA seq data generated at different time points. The package includes the capacity to run and analyze RNASeq data to obtain Differentially expressed genes using different methods at the same time. It can also perform comparitive analysis of the results obtained from all different kinds of analysis with the capacity to store and summarize the results of each comparative analysis methods used.
-
-The package is designed to carry out analysis by just extracting argument form an arguments file by using extract_input_data function which will automatically convert the data into the form required by the later function to run the analysis  or it can carry out analysis by dynamically assigning variables and inputs to the functions.
-There are set of inputs used to run the analysis, some of it are specific to the particular analysis while others are common to all the anlysis types. The ones that are common are 
-1. count matrix
-2. sample meta data
-3. contrast variable
-4. patient id variable
-5. model design parameters
-   
-In order to run the pacakage correctly the some of these inputs like Count matrix and sample meta data  must be preprocessed as a dataframe containing the right column names and row names while others must be correctly assigned as the string variable based on what kind of analysis the user wants to perform.
+### Features
+1. **Automated Input Handling**: Extract arguments from an input file using `extract_input_data`.
+2. **Dynamic Input Configuration**: Assign inputs dynamically for specific analyses.
+3. **Comprehensive Output**: Summarized results for each method.
 
 ### Inputs
-If the user is running the pacakage by extracting the inputs using the argument file then the sample argument file looks like this.
-|argument	| value1 |
-| -----------| ------------------- |
-|data_file	|path to count matrix|
-|sample_meta_data	|path to sample meta data|
-|day_subset|	0,3|
-|treatment_gp	|2 µg ID93 + 5 µg GLA-SE (2 Vaccine Injections),2 µg ID93 + 5 µg GLA-SE (3 Vaccine Injections)|
-|model design parameters	|~day+pubid|
-|output_directory	|path to store the results|
+Common inputs include:
+- **Count matrix**: Gene counts (rows: genes, columns: samples).
+- **Sample metadata**: Sample details (e.g., day, participant ID).
+- **Contrast variable**: Defines the time points (e.g., "day").
+- **Patient ID variable**: Unique participant identifier (e.g., "ptid").
+- **Model design parameters**: Defines the model (e.g., `~day+ptid`).
 
+### Argument File Example
+| Argument            | Value                          |
+|---------------------|--------------------------------|
+| data_file           | Path to count matrix          |
+| sample_meta_data    | Path to sample meta data      |
+| day_subset          | 0,3                           |
+| treatment_gp        | Treatment group details       |
+| model design parameters | ~day+pubid                 |
+| output_directory    | Path to store results         |
 
-The function extract_data_input will extract all the inputs from the arguments files which can be useful to run analysis in an iteration for all different kinds of analysis and many other different time points as a pipeline. However, to run the analysis as a pipeline or even separately there are few things that theuser has to keep in mind before running the analysis and that is the form of the input data structure.
+---
 
-This table explains the inputs used for the anlalyis and the structure and format that is required for the input to run the analysis.
-|input data	| format and structure | analysis type that uses this input |
-| -----------| ------------------- | ------------------- |
-|count_matrix| R dataframe containing gene counts with genenames as rownames and the sample subset selected for the analysis as column names |all |
-|sample_metadata| R dataframe containing information about each sample (day, participant id/ptid) with subset samples selected for the analysis as rownames and the information about samples like the day, participant ID as column names |all |
-|contrast variable | string variable the is used to define the contrast variable which is the time point variable for the analysis, for example "day" | all|
-|patient id variable  | string variable that is used to define the unique patient id variable used for the analysis, for example in the vaccine study it is the variable that stores participant id for each individual like "ptid" | all|
-|model_design_parameter  | string variable that is used to define the model design parameter to be used to run the analysis. for example "~day+ptid",  note: it should be the same variable or combination of variable used to define the contrast variable and patient id variable for the analysis | all|
-| form  | string variable that is used to define the variable to be tested for a fixed effect e.g. "~ day + (1/ptid) " | limma_voom with duplicate correlation |
-| kimma_model | string variable that is used to define the model design parameter used to perform the kimma analysis e.g "day+ptid"| kimma|
+## Running MultiDGEA Without Argument Files
 
+### Steps to Run Analysis
 
+1. **Install the package:**
+   ```R
+   install.packages(file.choose(), repos = NULL, type="source")
+   ```
 
+2. **Load the library:**
+   ```R
+   library(MultiDGEA)
+   ```
 
-## MultiDGEA R Package without using arguments file
+3. **Load input data:**
+   ```R
+   counts_data <- read.csv("counts.csv", row.names = 1)
+   sample_meta_data <- read.csv("sample_meta_data.csv", row.names = 1)
+   ```
 
-The outline of this tutorial is as follows:
-### Running the analysis 
-1.  Install the package MultiDGEA from a zipped folder `` install.packages(file.choose(), repos = NULL, type="source") ``
-2.  Use the library `` library(MultiDGEA) ``
-3.  Load the  counts data 
-   `` counts_data <- read.csv("counts.csv", row.names = 1)  ``
-4. Load the sample meta data 
-   `` sample_meta_data <- read.csv("sample_meta_data.csv", row.names = 1)  ``
-
-6.  Find MultiDGEA analysis results using Kimma method
-
-                Kimma_result <- fitting_data_kimma (count_matrix = counts_data,
-                                                    meta_data = sample_meta_data,
-                                                    model_design_parameter = "~day",
-                                                    kimma_model=  "~ day + (1|pubid)",
-                                                    contrast_var="day",
-                                                    patient_id_var="pubid")
-7.  Find MultiDGEA analysis results using DREM method
-
-               Drem_results <- fitting_data_DREAM (count_matrix = counts_data,
-                                                    meta_data = sample_meta_data,
-                                                    model_design_parameter = "~day",
-                                                    form = "~ day + (1|pubid) ",
-                                                    contrast_var="day",
-                                                    patient_id_var="pubid")
-    
-9.  Find MultiDGEA analysis results using Limma Voom method
-   
-                Limma_voom_results <- fitting_data_limma_voom (count_matrix = counts_data,
-                                                    meta_data = sample_meta_data,
-                                                    model_design_parameter = "~day",
-                                                    contrast_var="day",
-                                                    patient_id_var="pubid")
-
-10. Find MultiDGEA analysis results using Limma Voom Duplicate Correlation method
-   
-                Limma_voom_duplicate_corr_results <- limma_voom_duplicate_correlation(count_matrix = counts_data,
-                                                                                         meta_data = sample_meta_data,
-                                                                                         model_design_parameter = "~day+pubid",
-                                                                                         contrast_var="day",
-                                                                                         patient_id_var="pubid")
-
-11. Find MultiDGEA analysis results using Deseq method
-   
-                Deseq_result <- fitting_data_Deseq(count_matrix = counts_data,
+4. **Run analyses:**
+   - **Kimma:**
+     ```R
+     Kimma_result <- fitting_data_kimma(count_matrix = counts_data,
+                                        meta_data = sample_meta_data,
+                                        model_design_parameter = "~day",
+                                        kimma_model = "~ day + (1|pubid)",
+                                        contrast_var = "day",
+                                        patient_id_var = "pubid")
+     ```
+   - **DREM:**
+     ```R
+     Drem_results <- fitting_data_DREAM(count_matrix = counts_data,
+                                         meta_data = sample_meta_data,
+                                         model_design_parameter = "~day",
+                                         form = "~ day + (1|pubid)",
+                                         contrast_var = "day",
+                                         patient_id_var = "pubid")
+     ```
+   - **Limma Voom:**
+     ```R
+     Limma_voom_results <- fitting_data_limma_voom(count_matrix = counts_data,
+                                                   meta_data = sample_meta_data,
+                                                   model_design_parameter = "~day",
+                                                   contrast_var = "day",
+                                                   patient_id_var = "pubid")
+     ```
+   - **Limma Voom Duplicate Correlation:**
+     ```R
+     Limma_voom_duplicate_corr_results <- limma_voom_duplicate_correlation(count_matrix = counts_data,
+                                                                           meta_data = sample_meta_data,
+                                                                           model_design_parameter = "~day+pubid",
+                                                                           contrast_var = "day",
+                                                                           patient_id_var = "pubid")
+     ```
+   - **DESeq:**
+     ```R
+     Deseq_result <- fitting_data_Deseq(count_matrix = counts_data,
                                         meta_data = sample_meta_data,
                                         model_design_parameter = "~day+pubid",
-                                        contrast_var="day",
-                                        patient_id_var="pubid")
+                                        contrast_var = "day",
+                                        patient_id_var = "pubid")
+     ```
 
+---
 
+## Visualization of Results
 
-### Visualization of the results
+1. **Normalized Counts Plot:**
+   - For Limma Voom:
+     ```R
+     Normalized_data_plot(method = "limma_voom",
+                          result = limma_voom_results,
+                          count_matrix = counts_data,
+                          meta_data = sample_meta_data,
+                          model_design_parameter = "~day")
+     ```
+   - For DESeq:
+     ```R
+     Normalized_data_plot(method = "deseq",
+                          result = deseq_results,
+                          count_matrix = counts_data,
+                          meta_data = sample_meta_data,
+                          model_design_parameter = "~day")
+     ```
 
-12.  Plot the normalized counts plot data set for different analysis:
-  for  limma_voom
+2. **Heatmap:**
+   ```R
+   heatmap_top_100_MultiDGEA_edgeR(result = Limma_voom_results,
+                                   count_matrix = counts_data,
+                                   meta_data = sample_meta_data,
+                                   model_design_parameter = "~day")
+   ```
 
+3. **Histogram:**
+   ```R
+   histogram_plot_p_value(Deseq_results)
+   ```
 
-                        Normalized_data_plot(method="limma_voom",
-                                            result=limma_voom_results,
-                                                count_matrix = counts_data,
-                                               meta_data = sample_meta_data,
-                                                model_design_parameter ="~day")
+4. **Volcano Plot:**
+   ```R
+   volcano_plot(Limma_voom_results, "volcano_plot_for_Limma_voom_duplicate_correlation")
+   ```
 
-For deseq
+---
 
+## Comparison of Results
 
-                        Normalized_data_plot(method="deseq",
-                                            result=deseq_results,
-                                                count_matrix = counts_data,
-                                               meta_data = sample_meta_data,
-                                                model_design_parameter ="~day") 
+1. **P-Value Scatter Plot:**
+   - For downregulated genes:
+     ```R
+     p_val_scatter_plot_comparison_down(res1 = Limma_voom_duplicate_corr_results,
+                                        res2 = Deseq_results,
+                                        p_val_xlabel = "p_val_Limma_voom_duplicate_corr_results",
+                                        p_val_ylabel = "p_val_Deseq_result",
+                                        p_val_title = "Limma_voom_duplicate_corr_vs_Deseq_results",
+                                        p_val = 0.05,
+                                        FDR_ = 0.2,
+                                        LFC_ = 0.05)
+     ```
+   - For upregulated genes:
+     ```R
+     p_val_scatter_plot_comparison_up(res1 = Limma_voom_duplicate_corr_results,
+                                      res2 = Deseq_results,
+                                      p_val_xlabel = "p_val_Limma_voom_duplicate_corr_results",
+                                      p_val_ylabel = "p_val_Deseq_result",
+                                      p_val_title = "Limma_voom_duplicate_corr_vs_Deseq_results",
+                                      p_val = 0.05,
+                                      FDR_ = 0.2,
+                                      LFC_ = 0.05)
+     ```
 
+2. **LFC Comparison:**
+   - For downregulated genes:
+     ```R
+     LFC_scatter_plot_comparison_down(res1 = Limma_voom_duplicate_corr_results,
+                                       res2 = Deseq_result,
+                                       LFC_xlabel = "LFC_Limma_voom_duplicate_corr_results",
+                                       LFC_ylabel = "LFC_Deseq_result",
+                                       LFC_title = "Limma_voom_duplicate_corr_vs_Deseq_results",
+                                       p_val = 0.05,
+                                       FDR_ = 0.2,
+                                       LFC_ = 0.05)
+     ```
+   - For upregulated genes:
+     ```R
+     LFC_scatter_plot_comparison_up(res1 = Limma_voom_duplicate_corr_results,
+                                     res2 = Deseq_results,
+                                     LFC_xlabel = "LFC_Limma_voom_duplicate_corr_results",
+                                     LFC_ylabel = "LFC_Deseq_result",
+                                     LFC_title = "Limma_voom_duplicate_corr_vs_Deseq_results",
+                                     p_val = 0.05,
+                                     FDR_ = 0.2,
+                                     LFC_ = 0.05)
+     ```
 
-                    
-14.  Plot the heatmap plot for differenr analysis
-
-                     heatmap_top_100_MultiDGEA_edgeR(result=Limma_voom_results,
-                                                 count_matrix = counts_data,
-                                               meta_data = sample_meta_data,
-                                                model_design_parameter ="~day")
-                
-16.  Plot the histogram plot for different analysis
-
-                            histogram_plot_p_value(Deseq_results)
-                          
-18.  Plot the volcano plot data for different analysis
-
-                        volcano_plot(Limma_voom_results,"volcano_plot_for_Limma_voom_duplicate_coorelation")
-
-                        
-
-
-### Comparision of different results
-18. P_value scatter plot for comparing the p_values for different analysis
-
-    for comparing limma_voom_duplicate_correlation and Deseq downregulated genes
-
-                                    p_val_scatter_plot_comparison_down(res1=Limma_voom_duplicate_corr_results,
-                                                                   res2=Deseq_results,
-                                                                   p_val_xlabel="p_val_Limma_voom_duplicate_corr_results",
-                                                                   p_val_ylabel="p_val_Deseq_result",
-                                                                   p_val_title="Limma_voom_duplicate_corr_results_vs_Deseq_results",
-                                                                   p_val=0.05,
-                                                                   FDR_=0.2,
-                                                                   LFC_=0.05)
-
-                                   
-    for comparing limma_voom_duplicate_correlation and Deseq upregulated genes
-
-                                    p_val_scatter_plot_comparison_up(res1=Limma_voom_duplicate_corr_results,
-                                                                   res2=Deseq_results,
-                                                                   p_val_xlabel="p_val_Limma_voom_duplicate_corr_results",
-                                                                   p_val_ylabel="p_val_Deseq_result",
-                                                                   p_val_title="Limma_voom_duplicate_corr_results_vs_Deseq_results",
-                                                                   p_val=0.05,
-                                                                   FDR_=0.2,
-                                                                   LFC_=0.05)
-    
-
-                               
-20. LFC_value comparision for different comparision
-
-for comparing limma_voom_duplicate_correlation and Deseq downregulated genes
-
-    LFC_scatter_plot_comparison_down(res1=Limma_voom_duplicate_corr_results,
-                                  res2=Deseq_result,
-                                 LFC_xlabel="LFC_Limma_voom_duplicate_corr_results",
-                                 LFC_ylabel="LFC_Deseq_result",
-                                 LFC_title="Limma_voom_duplicate_corr_results_vs_Deseq_results",
-                                 p_val=0.05,
-                                 FDR_=0.2,
-                                 LFC_=0.05)
-
-
-for comparing limma_voom_duplicate_correlation and Deseq upregulated genes
-
-    LFC_scatter_plot_comparison_up(res1=Limma_voom_duplicate_corr_results,
-                                  res2=Deseq_results,
-                                 LFC_xlabel="LFC_Limma_voom_duplicate_corr_results",
-                                 LFC_ylabel="LFC_Deseq_result",
-                                 LFC_title="Limma_voom_duplicate_corr_results_vs_Deseq_results",
-                                 p_val=0.05,
-                                 FDR_=0.2,
-                                 LFC_=0.05)
-
-                                 
-22. Finding significant gene and plotting venn diagram representation for the comparing the number  of significant genes accross different analysis
-
-Finding significant genes for Limma_voom_duplicate_correlation
-                        
-                    Limma_voom_duplicate_corr_results_MultiDGEA <- find_MultiDGEA_genes(result = Limma_voom_duplicate_corr_results,
-                                                                             p_val=0.05,
-                                                                              FDR_=0.2,
-                                                                              LFC_=0.05)
-Finding significant genes for Deseq
-                        
-                    Limma_voom_duplicate_corr_results_MultiDGEA <- find_MultiDGEA_genes(result = Limma_voom_duplicate_corr_results,
-                                                         p_val=0.05,
-                                                          FDR_=0.2,
-                                                          LFC_=0.05)
-
-
-                        Deseq_results_MultiDGEA <- find_MultiDGEA_genes(result = Deseq_results,
-                                                            p_val=0.05,
-                                                            FDR_=0.2,
-                                                            LFC_=0.05)
-                        
-                        sig1=Deseq_results_MultiDGEA$up_regulated
-                        sig2=Limma_voom_duplicate_corr_results_MultiDGEA$up_regulated
-                        plot_venn(sig1,sig2,"Limma_voom_vs_Deseq")
-
-                                                          
-
-
+3. **Venn Diagram:**
+   - Finding significant genes:
+     ```R
+     Limma_voom_duplicate_corr_results_MultiDGEA <- find_MultiDGEA_genes(result = Limma_voom_duplicate_corr_results,
+                                                                         p_val = 0.05,
+                                                                         FDR_ = 0.2,
+                                                                         LFC_ = 0.05)
+     Deseq_results_MultiDGEA <- find_MultiDGEA_genes(result = Deseq_results,
+                                                     p_val = 0.05,
+                                                     FDR_ = 0.2,
+                                                     LFC_ = 0.05)
+     sig1 <- Deseq_results_MultiDGEA$up_regulated
+     sig2 <- Limma_voom_duplicate_corr_results_MultiDGEA$up_regulated
+     plot_venn(sig1, sig2, "Limma_voom_vs_Deseq")
+     ```
